@@ -2,7 +2,13 @@
   <div>
     <van-nav-bar class="login-bar" title="登 录"></van-nav-bar>
     <van-cell-group>
-      <van-field v-model="user.mobile" error-message="手机号格式错误" placeholder="请输入手机号" />
+      <van-field
+
+        name="mobile"
+        v-model="user.mobile"
+        error-message="123"
+        placeholder="请输入手机号"
+      />
       <van-field v-model="user.code" error-message="手机号格式错误" placeholder="请输入验证码">
         <van-button class="code-btn" slot="button" size="small">发送验证码</van-button>
       </van-field>
@@ -28,7 +34,9 @@ export default {
   methods: {
     async submitLogin () {
       try {
-        await login(this.user)
+        let res = await login(this.user)
+        console.log(res)
+        this.$store.commit('setUser', res)
         this.$router.push('/')
         this.$toast.success('登陆成功')
       } catch {

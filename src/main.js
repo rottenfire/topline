@@ -3,11 +3,16 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Vant from 'vant'
+import VeeValidate from 'vee-validate'
 import 'vant/lib/index.css'
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 
 Vue.use(Vant)
+Vue.use(VeeValidate, {
+  events: ''
+})
 
 new Vue({
   router,
