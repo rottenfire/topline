@@ -46,6 +46,7 @@
 <script>
 import { login } from '@/api/login'
 import { setInterval, clearInterval } from 'timers'
+import { mapMutations } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -61,6 +62,8 @@ export default {
     }
   },
   methods: {
+    // 引入vuex的mutation
+    ...mapMutations(['setUser']),
     // 发送验证码
     sendCode () {
       let time = this.resendCodeTime
@@ -86,7 +89,8 @@ export default {
         this.loading = true
         try {
           let res = await login(this.user)
-          this.$store.commit('setUser', res)
+          // this.$store.commit('setUser', res)
+          this.setUser(res)
           this.$toast.success('登陆成功')
           this.$router.push('/')
         } catch {
@@ -128,7 +132,7 @@ export default {
   border-radius: 20px;
   background-color: #aaaaaa;
   color: #fff;
-  width: 100px;
+  width: 90px;
   &[disabled] {
     background-color: #ccc;
   }
