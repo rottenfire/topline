@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/views/login'
 import Home from '@/views/home/home'
+import Tabbar from '@/views/tabbar'
+import Question from '@/views/home/question'
 
 Vue.use(Router)
 
@@ -14,7 +16,19 @@ export default new Router({
     },
     {
       path: '/',
-      component: Home
+      component: Tabbar,
+      children: [
+        {
+          name: 'home',
+          path: '',
+          component: Home
+        },
+        {
+          name: 'question',
+          path: '/question',
+          component: Question
+        }
+      ]
     }
     // {
     //   path: '/about',
