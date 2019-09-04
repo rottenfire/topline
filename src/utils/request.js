@@ -1,10 +1,11 @@
+import Store from '@/store'
 import axios from 'axios'
 import JSONbig from 'json-bigint'
 
 const instance = axios.create({
   baseURL: ' http://ttapi.research.itcast.cn',
-  timeout: 5000
-  // headers: { 'Authorization': `Bearer ${}` }
+  timeout: 5000,
+  headers: { 'Authorization': `Bearer ${Store.state.user.token}` }
 })
 
 // 获取到服务器返回的数据，并且是在处理数据之前使用

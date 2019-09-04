@@ -5,7 +5,6 @@ import store from './store'
 import Vant from 'vant'
 import VeeValidate from 'vee-validate'
 import 'vant/lib/index.css'
-import '@/styles/index.less'
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
