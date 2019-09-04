@@ -35,7 +35,7 @@
         class="btn"
         :loading="loading"
         loading-text="登录中"
-        color="#7232dd"
+        color="#966ddd"
         size="large"
         @click="submitLogin"
       >登 录</van-button>
@@ -123,7 +123,7 @@ export default {
 
 <style lang="less" scoped>
 .login-bar {
-  background-color: #7232dd;
+  background-color: #966ddd;
   .van-nav-bar__title {
     color: #fff;
   }
