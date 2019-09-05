@@ -5,15 +5,20 @@
       <van-field class="nav-search-input" placeholder="请输入搜索内容" />
       <van-icon class="right-icon" name="search" color="#fff" />
     </div>
-    <van-tabs class="tab">
+    <van-tabs class="tabs" v-model="channelActive" animated>
       <van-tab v-for="channelItem in channelList" :key="channelItem.id" :title="channelItem.name">
-        <van-list v-model="loadingList" :finished="finished" finished-text="没有更多了">
-          <van-cell v-for="(item,index) in articleList" :key="index">
+        <van-list
+        v-model="channelItem.loading"
+        @load="getArticleList"
+        :finished="channelItem.finished"
+        finished-text="没有更多的文章了"
+        >
+          <van-cell v-for="article in channelItem.articles" :key="article.art_id.toString()">
             <div class="cell-content">
-              <span class="title">{{item.title}}</span>
+              <span class="title">{{article.title}}</span>
               <div class="img-box">
                 <van-image
-                  v-for="(img,index) in item.cover.images"
+                  v-for="(img,index) in article.cover.images"
                   :key="index"
                   class="img"
                   style="width:100px;height:100px;"
@@ -23,9 +28,9 @@
             </div>
             <div class="cell-bottom">
               <div class="art-msg">
-                <span>{{item.aut_name}}</span>
-                <span>{{item.comm_count}}评论</span>
-                <span>6天前</span>
+                <span>{{article.aut_name}} </span>
+                <span>{{article.comm_count}}评论 </span>
+                <span>{{article.pubdate | toNowDate}}</span>
               </div>
               <van-icon name="cross" />
             </div>
@@ -50,31 +55,44 @@ import { channelList } from '@/api/channel'
 export default {
   data () {
     return {
-      finished: false,
-      loadingList: false,
+      channelActive: 0,
       showPop: false,
-      articleList: [],
       channelList: []
     }
   },
-  methods: {
-    async getArticleList () {
-      const res = await recommendList({
-        timestamp: new Date().getTime(),
-        channel_id: 0,
-        with_top: 1
-      })
-      this.articleList = res.results
-    },
-    async getChannelList () {
-      const res = await channelList()
-      this.channelList = res.channels
-      console.log(this.channelList)
+  computed: {
+    currentChannel () {
+      return this.channelList[this.channelActive]
     }
   },
-  async created () {
+  methods: {
+    // 获取目标文章列表
+    async getArticleList () {
+      const res = await recommendList({
+        timestamp: this.currentChannel.timestamp || Date.now(),
+        channel_id: this.currentChannel.id,
+        with_top: 1
+      })
+      this.currentChannel.articles.push(...res.results)
+      this.currentChannel.timestamp = res.pre_timestamp
+      this.currentChannel.loading = false
+      console.log(this.currentChannel)
+    },
+    // 获取频道列表
+    async getChannelList () {
+      const res = await channelList()
+      res.channels.forEach(item => {
+        item.articles = []
+        item.timestamp = null
+        item.loading = false
+        item.finished = false
+      })
+      this.channelList = res.channels
+      console.log(res)
+    }
+  },
+  created () {
     this.getChannelList()
-    this.getArticleList()
   }
 }
 </script>
@@ -105,8 +123,18 @@ export default {
     padding: 0 10px;
   }
 }
-.tab {
+.tabs {
   margin-top: 50px;
+  /deep/ .van-tabs__wrap {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    z-index: 1000;
+  }
+  /deep/ .van-tabs__content {
+    margin-top: 94px;
+    margin-bottom: 50px;
+  }
   .cell-content {
     display: flex;
     justify-content: space-between;

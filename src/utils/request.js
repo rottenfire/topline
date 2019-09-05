@@ -4,8 +4,7 @@ import JSONbig from 'json-bigint'
 
 const instance = axios.create({
   baseURL: ' http://ttapi.research.itcast.cn',
-  timeout: 5000,
-  headers: { 'Authorization': `Bearer ${Store.state.user.token}` }
+  timeout: 5000
 })
 
 // 获取到服务器返回的数据，并且是在处理数据之前使用
@@ -23,6 +22,9 @@ instance.defaults.transformResponse = [function (data) {
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
   // Do something before request is sent
+  if (Store.state.user) {
+    config.headers.Authorization = `Bearer ${Store.state.user.token}`
+  }
   return config
 }, function (error) {
   // Do something with request error
