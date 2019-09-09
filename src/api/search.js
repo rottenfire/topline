@@ -7,3 +7,7 @@ export const suggestionSearch = q => {
     }
   })
 }
+
+export const getHistory = () => {
+  return request.get('/app/v1_0/search/histories')
+}
