@@ -58,6 +58,7 @@
     ></more-action>
     <channel-edit
       @changeChannelActive="changeChannelActive"
+      @deleteLastChannel="deleteLastChannel"
       :channels="channelList"
       :activeChannel="channelActive"
       v-model="showChannelEdite"
@@ -189,6 +190,9 @@ export default {
         return article.aut_id === this.handleArticle.aut_id
       })
       articles.splice(index, 1)
+    },
+    deleteLastChannel () {
+      this.channelActive--
     }
   },
   created () {

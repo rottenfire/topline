@@ -113,6 +113,14 @@ export default {
         return
       }
       // 编辑模式
+      if (index === 0) {
+        // 如果删除的是推荐
+        return
+      }
+      // 删除最后一个会找不熬当前active
+      if (index === this.channels.length - 1) {
+        this.$emit('deleteLastChannel')
+      }
       let delChannel = this.channels.splice(index, 1)
       if (this.user) {
       // 如果登录了
@@ -144,6 +152,7 @@ export default {
           this.channels.pop()
           this.$toast.fail('添加失败')
         }
+        return
       }
       // 未登录
       setItem('channels', this.channels)
