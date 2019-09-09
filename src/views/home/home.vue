@@ -56,7 +56,12 @@
       :article="handleArticle"
       v-model="moreAction"
     ></more-action>
-    <channel-edit v-model="showChannelEdite"></channel-edit>
+    <channel-edit
+      @changeChannelActive="changeChannelActive"
+      :channels="channelList"
+      :activeChannel="channelActive"
+      v-model="showChannelEdite"
+    ></channel-edit>
   </div>
 </template>
 
@@ -67,6 +72,8 @@ import Vue from 'vue'
 import { Lazyload } from 'vant'
 import MoreAction from '@/views/home/components/more-action'
 import ChannelEdit from '@/views/home/components/channel-edit'
+import { setItem, getItem } from '@/utils/localStorage'
+
 // options 为可选参数，无则不传
 Vue.use(Lazyload)
 
@@ -94,49 +101,76 @@ export default {
   methods: {
     // 下拉刷新
     async pullRefresh () {
-      const res = await recommendList({
-        timestamp: Date.now(),
-        channel_id: this.currentChannel.id,
-        with_top: 1
-      })
-      this.currentChannel.articles.unshift(...res.results.reverse())
-      this.currentChannel.pullLoading = false
-      if (res.results.length === 0) {
-        this.currentChannel.finished = true
+      try {
+        const res = await recommendList({
+          timestamp: Date.now(),
+          channel_id: this.currentChannel.id,
+          with_top: 1
+        })
+        this.currentChannel.articles.unshift(...res.results.reverse())
+        this.currentChannel.pullLoading = false
+        if (res.results.length === 0) {
+          this.currentChannel.finished = true
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
     // 获取目标文章列表
     async getArticleList () {
       let channelIndex = this.channelActive
-      const res = await recommendList({
-        timestamp: this.currentChannel.timestamp || Date.now(),
-        channel_id: this.currentChannel.id,
-        with_top: 1
-      })
-      this.currentChannel.timestamp = res.pre_timestamp
-      this.currentChannel.articles.push(...res.results)
-      this.channelList[channelIndex].loading = false
-      if (res.results.length === 0) {
-        this.currentChannel.finished = true
+      try {
+        const res = await recommendList({
+          timestamp: this.currentChannel.timestamp || Date.now(),
+          channel_id: this.currentChannel.id,
+          with_top: 1
+        })
+        this.currentChannel.timestamp = res.pre_timestamp
+        this.currentChannel.articles.push(...res.results)
+        this.channelList[channelIndex].loading = false
+        if (res.results.length === 0) {
+          this.currentChannel.finished = true
+        }
+      } catch (error) {
+        console.log(error)
       }
-      // console.log(this.currentChannel)
     },
     // 获取频道列表
     async getChannelList () {
-      const res = await channelList()
-      res.channels.forEach(item => {
+      let channels = []
+      if (this.$store.state.user) {
+        try {
+          const res = await channelList()
+          channels = res.channels
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        if (getItem('channels')) {
+          channels = getItem('channels')
+        } else {
+          const res = await channelList()
+          channels = res.channels
+          setItem('channels', channels)
+        }
+      }
+      channels.forEach(item => {
         item.articles = []
         item.timestamp = null
         item.loading = false
         item.finished = false
         item.pullLoading = false
       })
-      this.channelList = res.channels
-      // console.log(res)
+      this.channelList = channels
     },
     showAction (article) {
       this.moreAction = true
       this.handleArticle = article
+    },
+    // 从频道编辑页面获取的数据，改变当前频道
+    changeChannelActive (index) {
+      this.showChannelEdite = false
+      this.channelActive = index
     },
     // 从列表中删除不喜欢的文章
     deleteArticle () {

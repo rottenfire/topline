@@ -38,6 +38,7 @@ instance.interceptors.response.use(function (response) {
   return response.data.data ? response.data.data : response
 }, function (error) {
   // Do something with response error
+  console.dir(error)
   return Promise.reject(error)
 })
 
