@@ -50,6 +50,7 @@
             v-for="channel in recommendChannels"
             :key="channel.id"
             class="channel-box"
+            @click="addChannel(channel)"
           >+{{channel.name}}</div>
         </van-cell>
       </div>
@@ -58,7 +59,7 @@
 </template>
 
 <script>
-import { allChannel, deleteChannel } from '@/api/channel'
+import { allChannel, deleteChannel, addChannel } from '@/api/channel'
 import { mapState } from 'vuex'
 import { setItem } from '@/utils/localStorage'
 
@@ -95,6 +96,7 @@ export default {
     ...mapState(['user'])
   },
   methods: {
+    // 获取全部频道
     async getAllChannel () {
       try {
         const res = await allChannel()
@@ -123,6 +125,27 @@ export default {
         return
       }
       // 如果没登录
+      setItem('channels', this.channels)
+    },
+    // 添加渠道
+    async addChannel (channel) {
+      this.$set(channel, 'articles', [])
+      this.$set(channel, 'timestamp', null)
+      this.$set(channel, 'loading', false)
+      this.$set(channel, 'finished', false)
+      this.$set(channel, 'pullLoading', false)
+      this.channels.push(channel)
+      // 已登录
+      if (this.user) {
+        try {
+          await addChannel(channel.id, this.channels.length)
+        } catch (error) {
+          console.log(error)
+          this.channels.pop()
+          this.$toast.fail('添加失败')
+        }
+      }
+      // 未登录
       setItem('channels', this.channels)
     }
   },
