@@ -6,13 +6,12 @@
       show-action
       @search="onSearch"
       @cancel="onCancel"
+      @input="inputSearchContent"
       background="#966ddd"
     />
     <!-- 搜索提示区域 -->
     <van-cell-group v-show="value">
-      <van-cell title="单元格" icon="search" />
-      <van-cell title="单元格" icon="search" />
-      <van-cell title="单元格" icon="search" />
+      <van-cell v-for="(option,index) in suggestionList" :key="index" :title="option" icon="search" />
     </van-cell-group>
     <!-- 历史记录区域 -->
     <van-cell-group v-show="!value">
@@ -29,13 +28,20 @@
 </template>
 
 <script>
+import { suggestionSearch } from '@/api/history'
 export default {
   data () {
     return {
-      value: ''
+      value: '',
+      suggestionList: []
     }
   },
   methods: {
+    async inputSearchContent () {
+      let res = await suggestionSearch(this.value)
+      console.log(res)
+      this.suggestionList = res.options
+    },
     onSearch () {},
     onCancel () {
       this.$router.push('/')
