@@ -2,7 +2,7 @@
   <div>
     <div class="nav-bar">
       <van-icon class="left-icon" name="wap-nav" @click="showPop = true" color="#fff" />
-      <van-field class="nav-search-input" placeholder="请输入搜索内容" />
+      <van-field class="nav-search-input" @click="goSearch" placeholder="请输入搜索内容" />
       <van-icon class="right-icon" name="search" color="#fff" />
     </div>
     <van-tabs class="tabs" color="#966ddd" v-model="channelActive">
@@ -193,6 +193,9 @@ export default {
     },
     deleteLastChannel () {
       this.channelActive--
+    },
+    goSearch () {
+      this.$router.push('/search')
     }
   },
   created () {

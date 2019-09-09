@@ -4,6 +4,7 @@ import Login from '@/views/login'
 import Home from '@/views/home/home'
 import Tabbar from '@/views/tabbar'
 import Question from '@/views/home/question'
+import Search from '@/views/search'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ export default new Router({
           component: Question
         }
       ]
+    },
+    {
+      name: 'search',
+      path: '/search',
+      component: Search
     }
     // {
     //   path: '/about',
