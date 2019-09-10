@@ -49,6 +49,7 @@
 import { suggestionSearch, getHistory } from '@/api/search'
 import { mapState } from 'vuex'
 import * as localStorage from '@/utils/localStorage'
+import _ from 'lodash'
 export default {
   data () {
     return {
@@ -62,13 +63,13 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    async inputSearchContent () {
+    inputSearchContent: _.debounce(async function () {
       if (!this.searchValue) {
         return
       }
       let res = await suggestionSearch(this.searchValue)
       this.suggestionList = res.options
-    },
+    }, 300),
     async getHistory () {
       // 已登录
       if (this.user) {
